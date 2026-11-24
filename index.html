@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Basic page settings: text encoding, mobile scaling, browser toolbar colour and page title -->
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#292230"><title>MarketCatalog — One catalog. Endless finds.</title>
+
+  <!-- Tab icon, then the stylesheets: Bootstrap first (base styles + form classes),
+       then style.css, which holds all of our own design and overrides Bootstrap where needed -->
+  <link rel="icon" href="favicon.svg"><link rel="stylesheet" href="bootstrap.min.css"><link rel="stylesheet" href="style.css">
+
+  <!-- JavaScript files. "defer" = download now, run only after the whole page is ready.
+       Order matters because each file uses the one before it:
+         icons.js    -> icon helpers
+         products.js -> sample product data
+         catalog.js  -> all catalog behaviour (search, filters, cart, merchant form) -->
+  <script defer src="icons.js"></script><script defer src="products.js"></script><script defer src="catalog.js"></script>
+</head>
+<body>
+
+<!-- Accessibility: keyboard users press Tab once to reveal this link and jump straight past the header -->
+<a href="#content" class="skip-link">Skip to content</a>
+
+<!-- ======================= HEADER: logo, navigation, role picker, cart button ======================= -->
+<header class="site-header"><div class="shell header-inner">
+  <!-- Logo / brand name -->
+  <a class="brand" href="#catalog" aria-label="MarketCatalog home"><span class="brand-icon"><i data-icon="brand"></i></span>MarketCatalog<span class="brand-period">.</span></a>
+
+  <!-- Main navigation. data-nav is used by catalog.js to highlight the active page (Catalog / Saved) -->
+  <nav class="topnav" aria-label="Main navigation">
+    <a href="#catalog" data-nav="catalog" class="navitem active"><i data-icon="grid"></i>Catalog</a>
+    <!-- #saved-count shows how many products are saved (filled in by catalog.js) -->
+    <a href="#saved" data-nav="saved" class="navitem"><i data-icon="heart"></i>Saved<span id="saved-count"></span></a>
+  </nav>
+
+  <div class="header-actions">
+    <!-- Role picker: switch between Shopper and Merchant (the dropdown menu opens from #role-button) -->
+    <div class="role-wrap"><button id="role-button" class="role-button" aria-expanded="false" aria-controls="role-menu"><i data-icon="user"></i><span id="role-label">Shopper</span><i data-icon="down"></i></button>
+    <div class="role-menu" id="role-menu" hidden><p>EXPLORE AS</p><button data-role="Shopper"><i data-icon="bag"></i><span><strong>Shopper</strong><small>Browse and save products</small></span><span class="role-tick"></span></button><button data-role="Merchant"><i data-icon="store"></i><span><strong>Merchant</strong><small>Add to the catalog</small></span><span class="role-tick"></span></button></div></div>
+    <!-- Thin vertical divider line, then the cart button with the item counter (#cart-count) -->
+    <span class="header-rule"></span><button id="cart-button" class="cart-button"><i data-icon="cart"></i><span>Cart</span><b id="cart-count">0</b></button>
+  </div>
+</div></header>
+
+<!-- ======================= MAIN CONTENT ======================= -->
+<main id="content" class="shell">
+
+  <!-- Hero banner at the top of the Catalog page (hidden on the Saved page) -->
+  <section class="hero" id="hero" aria-labelledby="hero-title">
+    <div class="hero-grid"></div><div class="hero-copy"><div class="eyebrow hero-eyebrow"><span class="status-dot"></span> MULTI-VENDOR MARKETPLACE</div>
+    <h1 id="hero-title">One catalog.<br><span>Endless finds.</span></h1><p>Explore everyday favorites from independent vendors.</p>
+    <!-- Live numbers: #hero-products and #hero-vendors are updated by catalog.js -->
+    <div class="hero-stat"><span><i data-icon="box"></i><b id="hero-products">12</b> products</span><em></em><span><i data-icon="store"></i><b id="hero-vendors">4</b> vendors</span></div></div>
+    <div class="hero-art"><img src="images/market-hero.webp" alt="Lime, lavender, and peach shopping bags with a ribbon-wrapped gift" fetchpriority="high"></div>
+    <!-- Decorative sparkles and edition label (aria-hidden = ignored by screen readers) -->
+    <span class="hero-spark spark-one" aria-hidden="true">✦</span><span class="hero-spark spark-two" aria-hidden="true">✧</span>
+    <span class="edition">THE EVERYDAY COLLECTION <i></i> 001</span>
+  </section>
+
+  <!-- Merchant-only banner with the "Add product" button (shown only when the role is Merchant) -->
+  <div id="merchant-banner" class="merchant-banner" hidden><div><i data-icon="store"></i><b>Merchant workspace</b><span>Give your next product a place in the catalog.</span></div><button id="new-product" class="primary-button"><i data-icon="plus"></i>Add product</button></div>
+
+  <!-- Product catalog: toolbar (title, search, sort) + filter sidebar + product grid -->
+  <section class="catalog-section" aria-labelledby="catalog-heading">
+
+    <!-- Toolbar: heading with result counter, search box, sort dropdown, mobile "Filters" button -->
+    <div class="catalog-toolbar"><div class="section-title"><h2 id="catalog-heading">Product catalog</h2><span id="result-count" class="count-chip" aria-live="polite">12 products</span></div>
+    <div class="catalog-tools"><div class="search-field"><i data-icon="search"></i><input id="search" type="search" placeholder="Search products..." aria-label="Search products or vendors"><kbd>/</kbd></div><div class="sort-wrap"><i data-icon="sort"></i><select id="sort" aria-label="Sort products"><option value="featured">Featured</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option><option value="rating">Top rated</option><option value="new">Newest</option></select><i data-icon="down"></i></div><button id="mobile-filters" class="mobile-filters" aria-expanded="false"><i data-icon="sliders"></i>Filters</button></div></div>
+
+    <div class="catalog-layout">
+
+      <!-- Filter sidebar. Vendor and Category checkboxes are created by catalog.js (updateFilters) -->
+      <aside id="filter-panel" class="filter-panel" aria-label="Product filters"><div class="filter-heading"><h3><i data-icon="sliders"></i>Filters</h3><button id="reset" class="text-button">Reset</button></div>
+      <!-- Vendor filter (checkbox list is filled in by JavaScript) -->
+      <details class="filter-group" open><summary>Vendor<i data-icon="up"></i></summary><div id="vendor-filters" class="filter-options"></div></details>
+      <!-- Category filter (checkbox list is filled in by JavaScript) -->
+      <details class="filter-group" open><summary>Category<i data-icon="up"></i></summary><div id="category-filters" class="filter-options"></div></details>
+      <!-- Price filter: a slider for the maximum price + two number boxes for exact min / max -->
+      <details class="filter-group" open><summary>Price range<i data-icon="up"></i></summary><label for="price-range" class="price-description">Maximum price <b id="range-output">₹4,000</b></label><input id="price-range" type="range" min="0" max="4000" value="4000" step="50"><div class="range-labels"><span>₹0</span><span id="max-price-label">₹4,000</span></div><div class="price-bounds"><label>Min ₹ <input id="min-price" aria-label="Minimum price" type="number" min="0" value="0" step="50"></label><span>–</span><label>Max ₹ <input id="max-price" aria-label="Maximum price" type="number" min="0" value="4000" step="50"></label></div></details>
+      <!-- Rating filter: radio buttons, only one choice at a time -->
+      <details class="filter-group" open><summary>Minimum rating<i data-icon="up"></i></summary><div id="rating-filters" class="filter-options"><label><input name="rating" type="radio" value="0" checked>All ratings</label><label><input name="rating" type="radio" value="4.5"><span class="star">★</span>4.5 &amp; up</label><label><input name="rating" type="radio" value="4"><span class="star">★</span>4.0 &amp; up</label></div></details>
+      </aside>
+
+      <!-- Results area: active filter chips, the product cards, and the "Showing x of y" line -->
+      <div class="results"><div id="active-filters"></div><div id="product-grid" class="product-grid"></div><div id="end-results" class="end-results"></div></div>
+    </div>
+  </section>
+</main>
+
+<!-- ======================= FOOTER ======================= -->
+<footer><div class="shell footer-inner"><span class="footer-brand"><i data-icon="bag"></i>MarketCatalog<span class="brand-period">.</span></span><span>A little catalog. A hands-on project.</span></div></footer>
+
+<!-- ======================= POP-UP WINDOWS (HTML <dialog> elements) =======================
+     They stay hidden until catalog.js opens them with showModal(). -->
+
+<!-- Cart window: the list (#cart-items) and the total/buttons (#cart-bottom) are filled in by JavaScript -->
+<dialog id="cart-dialog" class="cart-dialog" aria-labelledby="cart-title"><div class="dialog-head"><div><span class="eyebrow">YOUR SELECTION</span><h2 id="cart-title">Shopping cart <span id="drawer-count" class="count-chip"></span></h2></div><button class="icon-button" data-close="cart-dialog" aria-label="Close cart"><i data-icon="x"></i></button></div><div id="cart-items" class="cart-items"></div><div id="cart-bottom"></div></dialog>
+
+<!-- Product details window: content is generated by showDetail() in catalog.js -->
+<dialog id="detail-dialog" class="detail-dialog" aria-label="Product details"><div id="product-detail"></div></dialog>
+
+<!-- Merchant form window: lets a Merchant add a new product (handled by the "submit" listener in catalog.js).
+     form-control / form-select / row / col-* are Bootstrap classes. -->
+<dialog id="merchant-dialog" class="merchant-dialog" aria-labelledby="merchant-title"><div class="dialog-head"><div><span class="eyebrow">MERCHANT WORKSPACE</span><h2 id="merchant-title">Add a product</h2></div><button class="icon-button" data-close="merchant-dialog" aria-label="Close form"><i data-icon="x"></i></button></div><form id="product-form"><p class="muted">Create a listing for your shop. It will appear in this browser’s catalog.</p><label>Product name<input class="form-control" name="name" placeholder="e.g. Ceramic coffee cup" required maxlength="80"></label><div class="row g-3"><label class="col-sm-6">Vendor<input class="form-control" name="vendor" list="vendor-list" required maxlength="40" placeholder="Your shop name"><datalist id="vendor-list"></datalist></label><label class="col-sm-6">Category<select class="form-select" name="category"><option>Electronics</option><option>Accessories</option><option>Home &amp; living</option><option>Lifestyle</option></select></label></div><div class="row g-3"><label class="col-6">Price (₹)<input class="form-control" name="price" type="number" min="0.01" max="1000000" step="0.01" required placeholder="0.00"></label><label class="col-6">Rating (0–5)<input class="form-control" name="rating" type="number" min="0" max="5" step="0.1" value="0" required></label></div><label>Description<textarea class="form-control" name="description" maxlength="500" rows="2" placeholder="What makes this product special?"></textarea></label><label>Product photo <small>(optional · up to 1 MB)</small><input class="form-control" name="photo" type="file" accept="image/jpeg,image/png,image/webp"></label><p id="form-error" class="form-error" role="alert"></p><div class="form-actions"><button type="button" class="secondary-button" data-close="merchant-dialog">Cancel</button><button class="primary-button" type="submit"><i data-icon="plus"></i>Add to catalog</button></div></form></dialog>
+
+<!-- Small pop-up message at the bottom of the screen (e.g. "Mug added to cart"); text is set by notify() in catalog.js -->
+<div class="notice" id="notice" role="status" aria-live="polite"></div>
+</body></html>
